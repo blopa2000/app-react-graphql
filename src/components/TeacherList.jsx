@@ -1,5 +1,6 @@
-import { useQuery, useMutation } from "@apollo/react-hooks";
-import { gql } from "apollo-boost";
+import { Link } from "react-router-dom";
+import { useQuery } from "@apollo/react-hooks";
+import { gql } from "@apollo/client";
 
 const GET_TEACHERS = gql`
   {
@@ -13,55 +14,37 @@ const GET_TEACHERS = gql`
   }
 `;
 
-const CREATE_TEACHER = gql`
-  mutation CreateTeacher(
-    $firstName: String!
-    $lastName: String!
-    $gender: Gender
-    $aptitudes: [String]
-  ) {
-    createTeacher(
-      input: { firstName: $firstName, lastName: $lastName, gender: $gender, aptitudes: $aptitudes }
-    ) {
-      _id
-      firstName
-      lastName
-      gender
-      aptitudes
-    }
-  }
-`;
-
 const TeacherList = () => {
   const { loading, error, data } = useQuery(GET_TEACHERS);
-  const [createTeacher] = useMutation(CREATE_TEACHER);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <h1 className="text-primary">Loading...</h1>;
   if (error) {
     console.log(error);
-    return <p>error</p>;
+    return <p className="text-danger">error</p>;
   }
 
-  const handleCreateTeacher = async () => {
-    const firstName = "un nuevo dato de prueba numero 2";
-    const lastName = "el mismo 2";
-    const gender = "M";
-    const aptitudes = ["uno", "dos", "tres"];
-    const res = await createTeacher({ variables: { firstName, lastName, gender, aptitudes } });
-    console.log(res.data.createTeacher);
-  };
-
   return (
-    <div>
+    <>
       <h1>Teachers</h1>
-      {data.getTeachers.map((teacher, id) => (
-        <p key={id}>{teacher._id}</p>
-      ))}
-
-      <button className="btn btn-primary" onClick={handleCreateTeacher}>
-        click
-      </button>
-    </div>
+      <Link className="btn btn-primary" to="/addTeacher">
+        Add
+      </Link>
+      <div className="d-flex flex-wrap justify-content-center">
+        {data.getTeachers.map((teacher) => (
+          <div key={teacher._id} className="card m-1" style={{ width: "18rem" }}>
+            <div className="card-body">
+              <h5 className="card-title">{teacher.firstName + " " + teacher.lastName}</h5>
+              <h6 className="card-subtitle mb-2 text-muted">Gender: {teacher.gender}</h6>
+              {teacher?.aptitudes.map((skills, id) => (
+                <span key={id} className="badge badge-primary mr-2 mb-2 rounded-pill ">
+                  {skills}
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
   );
 };
 

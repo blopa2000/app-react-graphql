@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 //components
 import TeacherList from "./components/TeacherList";
+import AddTeacher from "./components/AddTeacher";
 import Navbar from "./components/Navbar";
 
 //bootswatch
@@ -14,6 +15,7 @@ function App() {
       <div className="container p-4">
         <Switch>
           <Route exact path="/" component={TeacherList} />
+          <Route exact path="/addTeacher" component={AddTeacher} />
         </Switch>
       </div>
     </Router>
